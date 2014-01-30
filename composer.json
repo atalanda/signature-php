@@ -1,0 +1,10 @@
+{
+    "name": "atalanda/signature",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "signature/"
+        ]
+    }   
+}

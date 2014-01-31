@@ -182,7 +182,7 @@ class AtalogicsSignatureTest extends PHPUnit_Framework_TestCase {
     $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array(
       "foo" => "bar",
       "auth_hash" => $authParams
-    ), $time);
+    ), $time+50); // let 50 seconds pass to validate
     $this->assertEquals(array("authenticated" => true), $request2->authenticate($this->token));
   }
 

@@ -13,7 +13,7 @@ class Request {
 
   public function sign(Token $token) {
     $parameter_string = $this->buildParameterString();
-    $signature = hash("sha256", $parameter_string.$token->getKey().$token->getSecret().$this->time);
+    $signature = $this->calculateSignature($token, $parameter_string, $this->time);
 
     return array_merge($this->parameters, array(
       "auth_hash" => array(
@@ -39,8 +39,8 @@ class Request {
       );
     }
 
-    $recalculatedAuthHash = $this->sign($token)["auth_hash"];
-    if($recalculatedAuthHash["auth_signature"] !== $this->getAuthHash()["auth_signature"]) {
+    $recalculatedSignature = $this->calculateSignature($token, $this->buildParameterString(), $this->getAuthHash()["auth_timestamp"]);
+    if($recalculatedSignature !== $this->getAuthHash()["auth_signature"]) {
       return array(
         "authenticated" => false,
         "reason" => "Signature does not match"
@@ -58,6 +58,10 @@ class Request {
     }
 
     return null;
+  }
+
+  private function calculateSignature($token, $string, $time) {
+    return hash("sha256", $string.$token->getKey().$token->getSecret().$time);
   }
 
   private function buildParameterString() {

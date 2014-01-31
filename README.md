@@ -12,7 +12,7 @@ The best way to install the library is by using [Composer](http://getcomposer.or
 ``` javascript
 { 
   "require": {
-    "atalanda/signature-php": "dev-master"
+    "atalanda/signature-php": "1.0.*@beta"
   }
 }
 ```
@@ -28,6 +28,9 @@ Use the generated `vendor/autoload.php` file to autoload the library classes.
 Usage
 =====
 
+Signing API calls
+-----------------
+Use this to add an auth_hash containing a valid signature to the parameter hash that you send to our API.
 ``` php
 $parameters = array(
   "atalogics" => array()
@@ -50,3 +53,18 @@ var_dump($parameters);
   }
 }*/
 ```
+
+Verifying the signature of our callbacks
+--------------
+Use this to verify the signature of our callbacks.
+``` php
+$data = json_decode($body, true); // convert json from post body into php array
+$token = new Atalogics\Signature\Token("[Your API key]", "[Your API secret]");
+$request = new Atalogics\Signature\Request("POST", "https://your-server.com/callback", $data);
+$signatureCheckResult = $request->authenticate($token);
+
+if($signatureCheckResult["authenticated"] === true) {
+  // signature is valid
+}
+```
+

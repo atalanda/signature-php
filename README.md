@@ -12,7 +12,7 @@ The best way to install the library is by using [Composer](http://getcomposer.or
 ``` javascript
 { 
   "require": {
-    "atalanda/signature-php": "1.0.*@beta"
+    "atalanda/signature-php": "1.0.0-beta"
   }
 }
 ```

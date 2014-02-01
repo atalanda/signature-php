@@ -16,11 +16,9 @@ class Request {
     $signature = $this->calculateSignature($token, $parameter_string, $this->time);
 
     return array_merge($this->parameters, array(
-      "auth_hash" => array(
-        "auth_timestamp" => $this->time,
-        "auth_key" => $token->getKey(),
-        "auth_signature" => $signature
-      )
+      "auth_timestamp" => $this->time,
+      "auth_key" => $token->getKey(),
+      "auth_signature" => $signature
     ));
   }
 
@@ -53,8 +51,12 @@ class Request {
   }
 
   private function getAuthHash() {
-    if(isset($this->parameters["auth_hash"])) {
-      return $this->parameters["auth_hash"];
+    if(isset($this->parameters["auth_signature"]) && isset($this->parameters["auth_timestamp"]) && isset($this->parameters["auth_key"])) {
+      return array(
+        "auth_timestamp" => $this->parameters["auth_timestamp"],
+        "auth_key" => $this->parameters["auth_key"],
+        "auth_signature" => $this->parameters["auth_signature"],
+      );
     }
 
     return null;
@@ -71,8 +73,8 @@ class Request {
   private function paramsToString($value, $key=null) {
     $str = "";
 
-    // do not include auth_hash in signing
-    if($key == "auth_hash") {
+    // do not include auth_* in signing
+    if($key == "auth_key" || $key == "auth_signature" || $key == "auth_timestamp") {
       return "";
     }
 

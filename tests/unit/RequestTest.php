@@ -165,24 +165,20 @@ class AtalogicsSignatureTest extends PHPUnit_Framework_TestCase {
 
     $request = new Atalogics\Signature\Request("POST", "/api/somePath", array("foo" => "bar"), $time);
     $parametersWithAuthHash = $request->sign($this->token);
-    $authParams = $parametersWithAuthHash["auth_hash"];
-    $this->assertEquals($time, $authParams["auth_timestamp"]);
-    $this->assertEquals($this->token->getKey(), $authParams["auth_key"]);
+    $this->assertEquals($time, $parametersWithAuthHash["auth_timestamp"]);
+    $this->assertEquals($this->token->getKey(), $parametersWithAuthHash["auth_key"]);
 
     $expectedSignature = hash("sha256", "POST/api/somePathfoobar".$this->token->getKey().$this->token->getSecret().$time);
-    $this->assertEquals($expectedSignature, $authParams["auth_signature"]);
+    $this->assertEquals($expectedSignature, $parametersWithAuthHash["auth_signature"]);
   }
 
   public function testVerifySignatureSuccess() {
     $time = 1391089574;
     $request = new Atalogics\Signature\Request("POST", "/api/somePath", array("foo" => "bar"), $time);
     // create auth_hash
-    $authParams = $request->sign($this->token)["auth_hash"];
+    $signedParams = $request->sign($this->token);
 
-    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array(
-      "foo" => "bar",
-      "auth_hash" => $authParams
-    ), $time+50); // let 50 seconds pass to validate
+    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", $signedParams, $time+50); // let 50 seconds pass to validate
     $this->assertEquals(array("authenticated" => true), $request2->authenticate($this->token));
   }
 
@@ -190,12 +186,11 @@ class AtalogicsSignatureTest extends PHPUnit_Framework_TestCase {
     $time = 1391089574;
     $request = new Atalogics\Signature\Request("POST", "/api/somePath", array("foo" => "bar"), $time);
     // create auth_hash
-    $authParams = $request->sign($this->token)["auth_hash"];
+    $authParams = $request->sign($this->token);
 
-    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array(
-      "foo" => "barDIFFERENT",
-      "auth_hash" => $authParams
-    ), $time);
+    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array_merge($authParams, array(
+      "foo" => "barDIFFERENT"
+    )), $time);
     $this->assertEquals(array("authenticated" => false, "reason" => "Signature does not match"), $request2->authenticate($this->token));
   }
 
@@ -203,14 +198,13 @@ class AtalogicsSignatureTest extends PHPUnit_Framework_TestCase {
     $time = 1391089574;
     $request = new Atalogics\Signature\Request("POST", "/api/somePath", array("foo" => "bar"), $time);
     // create auth_hash
-    $authParams = $request->sign($this->token)["auth_hash"];
+    $authParams = $request->sign($this->token);
 
     $timestampGrace = 600;
     $timeLater = $time + $timestampGrace + 1;
-    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array(
-      "foo" => "bar",
-      "auth_hash" => $authParams
-    ), $timeLater);
+    $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array_merge(array(
+      "foo" => "bar"
+    ), $authParams), $timeLater);
     $this->assertEquals(array(
       "authenticated" => false,
       "reason" => "Auth timestamp is older than ".$timestampGrace." seconds"

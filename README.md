@@ -1,4 +1,3 @@
-
 AtalandaSignature-php
 ==================
 
@@ -40,17 +39,14 @@ $request = new Atalogics\Signature\Request("POST", "https://atalogics.com/api/or
 $signedParameters = $request->sign($token);
 
 var_dump($parameters);
-/* => array(2) {
+/* => array(5) {
   'atalogics' => array()
-  'auth_hash' =>
-  array(3) {
-    'auth_timestamp' =>
-    int(1391167211)
-    'auth_key' =>
-    string(4) "[Your API key]"
-    'auth_signature' =>
-    string(64) "552beac4b99949a556b120b7e5f7e22def46f663992a08f0f132ad4afee68b9f"
-  }
+  'auth_timestamp' =>
+  int(1391167211)
+  'auth_key' =>
+  string(4) "[Your API key]"
+  'auth_signature' =>
+  string(64) "552beac4b99949a556b120b7e5f7e22def46f663992a08f0f132ad4afee68b9f"
 }*/
 ```
 

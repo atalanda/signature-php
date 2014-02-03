@@ -29,7 +29,7 @@ Usage
 
 Signing API calls
 -----------------
-Use this to add an auth_hash containing a valid signature to the parameter hash that you send to our api.
+Use this to add a valid signature to the parameter hash that you send to our api.
 ``` php
 $parameters = array(
   "atalogics" => array()
@@ -38,7 +38,7 @@ $token = new Atalogics\Signature\Token("[Your API key]", "[Your API secret]");
 $request = new Atalogics\Signature\Request("POST", "https://atalogics.com/api/order", $parameters);
 $signedParameters = $request->sign($token);
 
-var_dump($parameters);
+var_dump($signedParameters);
 /* => array(5) {
   'atalogics' => array()
   'auth_timestamp' =>

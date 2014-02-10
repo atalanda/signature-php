@@ -201,13 +201,13 @@ class AtalogicsSignatureTest extends PHPUnit_Framework_TestCase {
     $authParams = $request->sign($this->token);
 
     $timestampGrace = 600;
-    $timeLater = $time + $timestampGrace + 1;
+    $timeLater = $time - $timestampGrace - 1;
     $request2 = new Atalogics\Signature\Request("POST", "/api/somePath", array_merge(array(
       "foo" => "bar"
     ), $authParams), $timeLater);
     $this->assertEquals(array(
       "authenticated" => false,
-      "reason" => "Auth timestamp is older than ".$timestampGrace." seconds"
+      "reason" => "Auth timestamp differs more than ".$timestampGrace." seconds"
     ), $request2->authenticate($this->token, $timestampGrace));
   }
 

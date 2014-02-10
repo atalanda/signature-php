@@ -30,10 +30,10 @@ class Request {
       );
     }
 
-    if($this->time - (int)$this->getAuthHash()["auth_timestamp"] > $timestampGrace) {
+    if(abs($this->time - (int)$this->getAuthHash()["auth_timestamp"]) > $timestampGrace) {
       return array(
         "authenticated" => false,
-        "reason" => "Auth timestamp is older than ".$timestampGrace." seconds"
+        "reason" => "Auth timestamp differs more than ".$timestampGrace." seconds"
       );
     }
 
